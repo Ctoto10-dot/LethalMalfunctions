@@ -81,10 +81,24 @@ namespace ShipCommander.Patches
                 return false;
             }
 
-            if (verb == "sc")
+            if (verb == "lm" || verb == "malfunctions")
             {
                 __instance.currentNode = null;
-                __result = CreateNode("=== ShipCommander ===\n\nAvailable commands:\n> status - View ship systems status\n> repair [system] - Repair a broken system\n> shocker - Activate defense grid\n\n");
+                __result = CreateNode(
+@"
+  _          _   _           _ __  __       _  __                  _   _                 
+ | |    ___ | |_| |__   __ _| |  \/  | __ _| |/ _|_   _ _ __   ___| |_(_) ___  _ __  ___ 
+ | |   / _ \| __| '_ \ / _` | | |\/| |/ _` | | |_| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+ | |__|  __/| |_| | | | (_| | | |  | | (_| | |  _| |_| | | | | (__| |_| | (_) | | | \__ \
+ |_____\___| \__|_| |_|\__,_|_|_|  |_|\__,_|_|_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+
+Available commands:
+> status - View ship systems status
+> repair [system] - Repair a broken system
+> shocker - Activate defense grid
+
+"
+                );
                 return false;
             }
 
