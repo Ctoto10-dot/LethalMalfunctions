@@ -36,8 +36,8 @@ The terminal itself will crash and become completely unresponsive.
 ### ⚡ Experimental Defense Grid (Shocker)
 If monsters breach the ship, the terminal operator can type `shocker` to activate the ship's experimental defense grid. 
 *   **REQUIREMENT:** The shocker will ONLY work if ALL ship systems are fully operational. If even one system (lights, doors, etc.) is broken, the defense grid cannot draw enough power and will fail to activate.
-*   **Effect:** This will instantly electrocute any monsters (and players!) standing inside the ship cabin.
-*   **Warning:** Activating the shocker causes a massive power surge. All ship systems will go offline for 15 seconds, and all breakers will trip. The ship must reboot before taking off.
+*   **Effect:** This will instantly **STUN** all monsters near the ship for 15 seconds. It will also completely drain the batteries of all items currently held or inside the ship.
+*   **Warning:** Activating the shocker causes a massive power surge. All ship systems will go offline for 15 seconds, and all breakers will trip. The item charger will also be disabled for 30 seconds. The ship must reboot before taking off.
 
 ---
 
