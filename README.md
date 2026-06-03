@@ -25,7 +25,7 @@ Signal translators and walkie-talkies will emit deafening static, cutting off al
 
 #### 🖥️ 4. Radar Interference (`radar`)
 The main monitor will turn to static, leaving the operator completely blind to monsters and loot.
-*   **Repair Procedure:** A crew member must look at the physical **Ship Breaker Box** on the wall. The box will display a 4-digit calibration code. The terminal operator must type `repair radar` followed by that code to recalibrate the screen.
+*   **Repair Procedure:** A crew member must first find the physical **Ship Breaker Box** on the wall and flip the Radar Breaker (Switch #3) back to ON. After power is restored, the box will display a 4-digit calibration code. The terminal operator must then type `repair radar` followed by that code to recalibrate the screen.
 
 #### 💻 5. Terminal Glitch (`terminal`)
 The terminal itself will crash and become completely unresponsive. 
