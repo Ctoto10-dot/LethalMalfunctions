@@ -1133,7 +1133,7 @@ namespace ShipCommander.Systems
 
             if (HUDManager.Instance != null)
             {
-                HUDManager.Instance.DisplayTip("<color=#ff0000>SYSTEMS ONLINE</color>", "Reboot successful. Ready for takeoff.", false);
+                HUDManager.Instance.DisplayTip("SYSTEMS ONLINE", "Reboot successful. Ready for takeoff.", false);
             }
         }
 
@@ -1220,7 +1220,7 @@ namespace ShipCommander.Systems
                 {
                     if (!isShockerMsg && HUDManager.Instance != null)
                     {
-                        HUDManager.Instance.DisplayTip($"<color=#ff0000>{titleText}</color>", bodyText, true);
+                        HUDManager.Instance.DisplayTip(titleText, bodyText, true);
                     }
                     else
                     {
