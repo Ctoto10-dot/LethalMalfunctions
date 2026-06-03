@@ -21,7 +21,12 @@ Type `repair [system]` to fix it.
 *   `repair radar`
 *   `repair comms`
 
-You can also check the current status of the ship's hardware by typing `status` in the terminal.
+You can also check the current status of the ship's hardware by typing `status` (or `lm`) in the terminal.
+
+### ⚡ Defense Grid (Shocker)
+If monsters breach the ship, the terminal operator can type `shocker` to activate the ship's experimental defense grid. 
+*   This will instantly electrocute any monsters (and players!) standing inside the ship cabin.
+*   **Warning:** Activating the shocker causes a massive power surge. All ship systems will go offline for 15 seconds, and you cannot activate it if any systems are currently broken.
 
 ---
 *The Company is not liable for any dismemberment, psychological trauma, or loss of scrap caused by failing to repair the blast doors in time.*
