@@ -12,7 +12,7 @@ The Company refused to pay for maintenance, so now you have to do it yourself. D
 
 #### 💡 1. Power Outages (`lights`)
 The ship's main breaker will frequently short out, plunging the entire cabin into total darkness.
-*   **Repair Procedure:** The terminal operator must type `repair lights` to reset the main lighting breaker.
+*   **Repair Procedure:** You cannot fix this via the terminal! A crew member must walk up to the physical **Ship Breaker Box** on the wall and manually flip the Main Lights Breaker (Switch #0) back to ON.
 
 #### 🚪 2. Hydraulic Jams (`doors`)
 The hydraulic fluid in the ship's blast doors is mostly made of cheap soy sauce now. Doors will jam shut or open, trapping you inside or outside.
