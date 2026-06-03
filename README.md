@@ -12,7 +12,7 @@ The Company refused to pay for maintenance, so now you have to do it yourself. D
 
 #### 💡 1. Power Outages (`lights`)
 The ship's main breaker will frequently short out, plunging the entire cabin into total darkness.
-*   **Repair Procedure:** You cannot fix this via the terminal! A crew member must walk up to the physical **Ship Breaker Box** on the wall and manually flip the Main Lights Breaker (Switch #0) back to ON.
+*   **Repair Procedure:** You cannot fix this via the terminal! A crew member must walk up to the physical **Ship Breaker Box** on the wall and manually flip the Main Lights Breaker (Switch #1) back to ON.
 
 #### 🚪 2. Hydraulic Jams (`doors`)
 The hydraulic fluid in the ship's blast doors is mostly made of cheap soy sauce now. Doors will jam shut or open, trapping you inside or outside.
@@ -25,11 +25,21 @@ Signal translators and walkie-talkies will emit deafening static, cutting off al
 
 #### 🖥️ 4. Radar Interference (`radar`)
 The main monitor will turn to static, leaving the operator completely blind to monsters and loot.
-*   **Repair Procedure:** A crew member must first find the physical **Ship Breaker Box** on the wall and flip the Radar Breaker (Switch #3) back to ON. After power is restored, the box will display a 4-digit calibration code. The terminal operator must then type `repair radar` followed by that code to recalibrate the screen.
+*   **Repair Procedure:** A crew member must first find the physical **Ship Breaker Box** on the wall and flip the Radar Breaker (Switch #4) back to ON. After power is restored, the box will display a 4-digit calibration code. The terminal operator must then type `repair radar` followed by that code to recalibrate the screen.
 
 #### 💻 5. Terminal Glitch (`terminal`)
 The terminal itself will crash and become completely unresponsive. 
 *   **Repair Procedure:** You cannot use the terminal to fix the terminal! A crew member must manually cycle the Terminal Breaker (Switch #5) OFF and ON on the physical Ship Breaker Box to force a hard reboot.
+
+---
+
+### 🔌 The Ship Breaker Box
+The Company has graciously installed a manual override breaker box on the wall of your ship. This is required for several physical repairs. The box features a digital display (used for Radar Calibration) and 5 physical breaker switches:
+*   **Switch #1 (Main Lights):** Controls the cabin lights. Automatically trips during a Power Outage. Flipping this ON fixes the lights.
+*   **Switch #2 (Hydraulics):** Controls door power. Must be ON for the blast doors to operate.
+*   **Switch #3 (Communications):** Controls power to the roof antenna. **CRITICAL:** You must turn this OFF before attempting to repair the antenna on the roof, or you will be electrocuted!
+*   **Switch #4 (Radar/Monitor):** Controls power to the main monitor. Automatically trips during Radar Interference. Must be turned ON to receive the calibration code.
+*   **Switch #5 (Terminal Power):** Controls power to the ship's terminal. Cycle this OFF and ON to reboot a glitched terminal.
 
 ---
 

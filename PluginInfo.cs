@@ -9,6 +9,6 @@ namespace ShipCommander
     {
         public const string PLUGIN_GUID = "com.ctoto.lethalmalfunctions";
         public const string PLUGIN_NAME = "LethalMalfunctions";
-        public const string PLUGIN_VERSION = "1.0.2";
+        public const string PLUGIN_VERSION = "1.0.3";
     }
 }
