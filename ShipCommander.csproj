@@ -1,0 +1,142 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>ShipCommander</AssemblyName>
+    <RootNamespace>ShipCommander</RootNamespace>
+    <Description>Enhanced ship navigator gameplay for Lethal Company</Description>
+    <Version>1.1.0</Version>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <!-- Suppress warnings about targeting older framework -->
+    <NoWarn>$(NoWarn);NU1701</NoWarn>
+  </PropertyGroup>
+
+  <!-- BepInEx core DLLs from local install -->
+  <ItemGroup>
+    <Reference Include="BepInEx">
+      <HintPath>$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Test\BepInEx\core\BepInEx.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="BepInEx.Preloader">
+      <HintPath>$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Test\BepInEx\core\BepInEx.Preloader.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Test\BepInEx\core\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="LethalNetworkAPI">
+      <HintPath>$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Test\BepInEx\plugins\xilophor-LethalNetworkAPI\LethalNetworkAPI\LethalNetworkAPI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TerminalApi">
+      <HintPath>$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Test\BepInEx\plugins\NotAtomicBomb-TerminalApi\TerminalApi.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+  </ItemGroup>
+
+  <!-- Game DLLs -->
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.InputSystem">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\Unity.InputSystem.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.Netcode.Runtime">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\Unity.Netcode.Runtime.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAudioModule">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>$(LethalCompanyDir)\Lethal Company_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Auto-copy DLL to BepInEx plugins after build -->
+  <Target Name="CopyToPlugins" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Debug'">
+    <!-- Clean up old duplicate DLLs from BepInEx root plugins folders to prevent conflicts -->
+    <Delete Files="$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Test\BepInEx\plugins\ShipCommander.dll" TreatErrorsAsWarnings="true" />
+    <Delete Files="$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Default\BepInEx\plugins\ShipCommander.dll" TreatErrorsAsWarnings="true" />
+    <RemoveDir Directories="$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Default\BepInEx\plugins\ShipCommander\" ContinueOnError="true" />
+    <RemoveDir Directories="$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Test\BepInEx\plugins\ShipCommander\" ContinueOnError="true" />
+    
+    <!-- Test profile copy -->
+    <MakeDir Directories="$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Test\BepInEx\plugins\Unknown-ShipCommander\" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Test\BepInEx\plugins\Unknown-ShipCommander\" />
+    <Copy SourceFiles="$(ProjectDir)\hammer-knock-on-metal.mp3" DestinationFolder="$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Test\BepInEx\plugins\Unknown-ShipCommander\" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(ProjectDir)\solid-confident-knock-with-a-hammer.mp3" DestinationFolder="$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Test\BepInEx\plugins\Unknown-ShipCommander\" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(ProjectDir)\neiz_esten-elektricheskiy-razryadz_uk.mp3" DestinationFolder="$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Test\BepInEx\plugins\Unknown-ShipCommander\" SkipUnchangedFiles="true" />
+
+    <!-- Default profile copy -->
+    <MakeDir Directories="$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Default\BepInEx\plugins\Unknown-ShipCommander\" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Default\BepInEx\plugins\Unknown-ShipCommander\" />
+    <Copy SourceFiles="$(ProjectDir)\hammer-knock-on-metal.mp3" DestinationFolder="$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Default\BepInEx\plugins\Unknown-ShipCommander\" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(ProjectDir)\solid-confident-knock-with-a-hammer.mp3" DestinationFolder="$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Default\BepInEx\plugins\Unknown-ShipCommander\" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(ProjectDir)\neiz_esten-elektricheskiy-razryadz_uk.mp3" DestinationFolder="$(AppData)\r2modmanPlus-local\LethalCompany\profiles\Default\BepInEx\plugins\Unknown-ShipCommander\" SkipUnchangedFiles="true" />
+
+  </Target>
+
+</Project>

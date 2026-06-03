@@ -1,0 +1,22 @@
+## Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+
+## NuGet
+*.nupkg
+*.snupkg
+packages/
+
+## IDE
+.vs/
+.vscode/
+*.user
+*.suo
+*.csproj.user
+
+## OS
+Thumbs.db
+desktop.ini
+.DS_Store
