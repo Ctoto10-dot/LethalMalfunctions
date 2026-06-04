@@ -141,6 +141,7 @@ namespace ShipCommander.Systems
                 RepairLoopAudioSource.loop = true;
                 RepairLoopAudioSource.playOnAwake = false;
                 RepairLoopAudioSource.spatialBlend = 1.0f; // 3D sound
+                RepairLoopAudioSource.spatialize = false;
                 RepairLoopAudioSource.maxDistance = 15f;
                 RepairLoopAudioSource.volume = 0.8f;
 
@@ -149,6 +150,7 @@ namespace ShipCommander.Systems
                 ElectricityAudioSource.loop = true;
                 ElectricityAudioSource.playOnAwake = false;
                 ElectricityAudioSource.spatialBlend = 1.0f; // 3D sound
+                ElectricityAudioSource.spatialize = false;
                 ElectricityAudioSource.maxDistance = 15f;
                 ElectricityAudioSource.volume = 0.6f; // Moderate volume
                 if (ElectricityClip != null)

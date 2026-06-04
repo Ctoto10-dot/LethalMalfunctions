@@ -22,6 +22,7 @@ namespace ShipCommander.Systems
 
             _rebootAudioSource = gameObject.AddComponent<AudioSource>();
             _rebootAudioSource.spatialBlend = 1.0f; // 3D sound
+            _rebootAudioSource.spatialize = false;
             _rebootAudioSource.maxDistance = 15f;
             _rebootAudioSource.volume = 0.8f;
             _rebootAudioSource.playOnAwake = false;
