@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <AssemblyName>ShipCommander</AssemblyName>
+    <AssemblyName>LethalMalfunctions</AssemblyName>
     <RootNamespace>ShipCommander</RootNamespace>
     <Description>Enhanced ship navigator gameplay for Lethal Company</Description>
     <Version>1.1.0</Version>
