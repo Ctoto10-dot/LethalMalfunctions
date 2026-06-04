@@ -51,6 +51,7 @@ namespace ShipCommander
 
             // Register networking
             Networking.ShipCommanderNetwork.Initialize();
+            Networking.ShipCommanderNetwork.InitializeUpgradeNetwork();
 
             // Register terminal commands and HUD
             _harmony.PatchAll(typeof(StartOfRoundPatch));

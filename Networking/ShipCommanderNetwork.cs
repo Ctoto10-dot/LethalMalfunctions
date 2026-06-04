@@ -180,5 +180,172 @@ namespace ShipCommander.Networking
                 events.NeedsBootSequence = false;
             }
         }
+
+        // ============================================================
+        //  UPGRADE SYSTEM NETWORKING
+        // ============================================================
+
+        // Message format: "steamId:upgradeType:newLevel:playerName"
+        public static LNetworkMessage<string> UpgradePurchaseMessage = LNetworkMessage<string>.Connect("SC_UpgradePurchase");
+        // Message format: serialized all-player data string
+        public static LNetworkMessage<string> UpgradeSyncMessage = LNetworkMessage<string>.Connect("SC_UpgradeSync");
+        // Message format: "steamId" (player whose upgrades were reset)
+        public static LNetworkMessage<string> UpgradeResetMessage = LNetworkMessage<string>.Connect("SC_UpgradeReset");
+        // Message format: "steamId:upgradeType" (client requests purchase)
+        public static LNetworkMessage<string> UpgradeRequestMessage = LNetworkMessage<string>.Connect("SC_UpgradeRequest");
+
+        public static void InitializeUpgradeNetwork()
+        {
+            UpgradePurchaseMessage.OnClientReceived += ClientHandleUpgradePurchase;
+            UpgradeSyncMessage.OnClientReceived += ClientHandleUpgradeSync;
+            UpgradeResetMessage.OnClientReceived += ClientHandleUpgradeReset;
+            UpgradeRequestMessage.OnServerReceived += ServerHandleUpgradeRequest;
+
+            Plugin.Logger.LogInfo("Upgrade network messages initialized.");
+        }
+
+        /// <summary>
+        /// Client requests to buy an upgrade. Server validates and applies.
+        /// </summary>
+        private static void ServerHandleUpgradeRequest(string message, ulong clientId)
+        {
+            Plugin.Logger.LogInfo($"Server received upgrade request from client {clientId}: {message}");
+
+            string[] parts = message.Split(':');
+            if (parts.Length < 2) return;
+
+            string steamId = parts[0];
+            if (!System.Enum.TryParse<UpgradeType>(parts[1], out var upgradeType)) return;
+
+            // Find the terminal
+            Terminal terminal = UnityEngine.Object.FindObjectOfType<Terminal>();
+            if (terminal == null) return;
+
+            // Find the player name
+            string playerName = "Unknown";
+            if (StartOfRound.Instance != null)
+            {
+                foreach (var player in StartOfRound.Instance.allPlayerScripts)
+                {
+                    if (player != null && SuitUpgradeManager.GetSteamId(player) == steamId)
+                    {
+                        playerName = player.playerUsername;
+                        break;
+                    }
+                }
+            }
+
+            var manager = SuitUpgradeManager.Instance;
+            manager.GetPlayerData(steamId).PlayerName = playerName;
+
+            if (manager.TryPurchase(steamId, upgradeType, terminal))
+            {
+                int newLevel = manager.GetPlayerData(steamId).GetLevel(upgradeType);
+                string broadcastMsg = $"{steamId}:{upgradeType}:{newLevel}:{playerName}";
+                UpgradePurchaseMessage.SendClients(broadcastMsg);
+
+                // Also sync the terminal credits to all clients
+                terminal.SyncGroupCreditsServerRpc(terminal.groupCredits, terminal.numberOfItemsInDropship);
+            }
+        }
+
+        /// <summary>
+        /// All clients receive notification that a player purchased an upgrade.
+        /// </summary>
+        private static void ClientHandleUpgradePurchase(string message)
+        {
+            Plugin.Logger.LogInfo($"Client received upgrade purchase: {message}");
+
+            string[] parts = message.Split(':');
+            if (parts.Length < 4) return;
+
+            string steamId = parts[0];
+            if (!System.Enum.TryParse<UpgradeType>(parts[1], out var upgradeType)) return;
+            if (!int.TryParse(parts[2], out int newLevel)) return;
+            string playerName = parts[3];
+
+            var manager = SuitUpgradeManager.Instance;
+            manager.SetUpgradeLevel(steamId, upgradeType, newLevel, playerName);
+
+            // Apply stats to the player
+            ApplyUpgradesToPlayer(steamId);
+        }
+
+        /// <summary>
+        /// Client receives full sync of all upgrade data (on join).
+        /// </summary>
+        private static void ClientHandleUpgradeSync(string message)
+        {
+            Plugin.Logger.LogInfo("Client received full upgrade sync from server");
+            var data = UpgradeSaveData.DeserializeFromNetwork(message);
+            SuitUpgradeManager.Instance.SetAllData(data);
+
+            // Apply stats to all players
+            if (StartOfRound.Instance != null)
+            {
+                foreach (var player in StartOfRound.Instance.allPlayerScripts)
+                {
+                    if (player != null)
+                    {
+                        string sid = SuitUpgradeManager.GetSteamId(player);
+                        if (sid != null) ApplyUpgradesToPlayer(sid);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// All clients receive notification that a player's upgrades were reset.
+        /// </summary>
+        private static void ClientHandleUpgradeReset(string steamId)
+        {
+            Plugin.Logger.LogWarning($"Client received upgrade reset for {steamId}");
+            SuitUpgradeManager.Instance.ResetAllUpgrades(steamId);
+            ApplyUpgradesToPlayer(steamId);
+        }
+
+        /// <summary>
+        /// Send full upgrade sync to all clients (called by host).
+        /// </summary>
+        public static void SendFullSync()
+        {
+            var data = SuitUpgradeManager.Instance.GetAllData();
+            string syncString = UpgradeSaveData.SerializeForNetwork(data);
+            UpgradeSyncMessage.SendClients(syncString);
+            Plugin.Logger.LogInfo("Sent full upgrade sync to all clients");
+        }
+
+        /// <summary>
+        /// Apply upgrade stats to a specific player by their Steam ID.
+        /// </summary>
+        public static void ApplyUpgradesToPlayer(string steamId)
+        {
+            if (StartOfRound.Instance == null) return;
+
+            foreach (var player in StartOfRound.Instance.allPlayerScripts)
+            {
+                if (player == null) continue;
+                string sid = SuitUpgradeManager.GetSteamId(player);
+                if (sid != steamId) continue;
+
+                var manager = SuitUpgradeManager.Instance;
+
+                // Apply jump force
+                float baseJumpForce = 13f; // Vanilla default
+                player.jumpForce = baseJumpForce * manager.GetJumpMultiplier(steamId);
+
+                // Apply max health
+                int maxHealth = manager.GetMaxHealth(steamId);
+                if (player.health > 0 && player.health <= 100 && maxHealth > 100)
+                {
+                    // Scale current health proportionally when upgrading
+                    float healthRatio = (float)player.health / 100f;
+                    player.health = (int)(healthRatio * maxHealth);
+                }
+
+                Plugin.Logger.LogInfo($"Applied upgrades to {player.playerUsername}: Jump={player.jumpForce:F1}, MaxHP={maxHealth}");
+                break;
+            }
+        }
     }
 }

@@ -93,10 +93,208 @@ Available commands:
 > status - View ship systems status
 > repair [system] - Repair a broken system
 > shocker - Activate defense grid
+> upgrades - View your suit upgrades
+> upgrade [type] - Purchase suit upgrade
+  Types: sprint, armor, jump, carry, stamina, health
 
 "
                 );
                 return false;
+            }
+
+            // ============================================================
+            //  SUIT UPGRADE COMMANDS
+            // ============================================================
+
+            if (verb == "upgrades")
+            {
+                var localPlayer = StartOfRound.Instance?.localPlayerController;
+                if (localPlayer == null) return true;
+
+                string steamId = SuitUpgradeManager.GetSteamId(localPlayer);
+                if (steamId == null) return true;
+
+                // Set player name if not set
+                var data = SuitUpgradeManager.Instance.GetPlayerData(steamId);
+                if (string.IsNullOrEmpty(data.PlayerName))
+                {
+                    data.PlayerName = localPlayer.playerUsername;
+                }
+
+                string display = SuitUpgradeManager.Instance.GetUpgradesDisplay(steamId, __instance.groupCredits);
+
+                __instance.currentNode = null;
+                __result = CreateNode(display);
+                return false;
+            }
+
+            if (verb == "upgrade" && words.Length >= 2)
+            {
+                var localPlayer = StartOfRound.Instance?.localPlayerController;
+                if (localPlayer == null) return true;
+
+                // Must be on ship
+                if (!localPlayer.isInHangarShipRoom)
+                {
+                    __instance.currentNode = null;
+                    __result = CreateNode("ERROR: You must be on the ship to purchase upgrades.\n\n");
+                    return false;
+                }
+
+                // Must be alive
+                if (localPlayer.isPlayerDead)
+                {
+                    __instance.currentNode = null;
+                    __result = CreateNode("ERROR: Dead employees cannot purchase upgrades.\n\n");
+                    return false;
+                }
+
+                string steamId = SuitUpgradeManager.GetSteamId(localPlayer);
+                if (steamId == null) return true;
+
+                var upgradeType = SuitUpgradeManager.ParseUpgradeType(words[1]);
+                if (!upgradeType.HasValue)
+                {
+                    __instance.currentNode = null;
+                    __result = CreateNode($"ERROR: Unknown upgrade type '{words[1]}'.\nAvailable: sprint, armor, jump, carry, stamina, health\n\n");
+                    return false;
+                }
+
+                // Check if already maxed
+                var playerData = SuitUpgradeManager.Instance.GetPlayerData(steamId);
+                playerData.PlayerName = localPlayer.playerUsername;
+                int currentLevel = playerData.GetLevel(upgradeType.Value);
+
+                if (currentLevel >= SuitUpgradeManager.MAX_LEVEL)
+                {
+                    __instance.currentNode = null;
+                    __result = CreateNode($"{upgradeType.Value} is already at MAX level.\n\n");
+                    return false;
+                }
+
+                int price = SuitUpgradeManager.GetPrice(upgradeType.Value, currentLevel + 1);
+
+                if (__instance.groupCredits < price)
+                {
+                    __instance.currentNode = null;
+                    __result = CreateNode($"NOT ENOUGH CREDITS.\nNeed {price}cr for {upgradeType.Value} Lv.{currentLevel + 1}, have {__instance.groupCredits}cr.\n\n");
+                    return false;
+                }
+
+                // Process purchase
+                if (Unity.Netcode.NetworkManager.Singleton != null && (Unity.Netcode.NetworkManager.Singleton.IsServer || Unity.Netcode.NetworkManager.Singleton.IsHost))
+                {
+                    // Host: apply directly
+                    if (SuitUpgradeManager.Instance.TryPurchase(steamId, upgradeType.Value, __instance))
+                    {
+                        int newLevel = playerData.GetLevel(upgradeType.Value);
+                        string broadcastMsg = $"{steamId}:{upgradeType.Value}:{newLevel}:{localPlayer.playerUsername}";
+                        ShipCommanderNetwork.UpgradePurchaseMessage.SendClients(broadcastMsg);
+                        ShipCommanderNetwork.ApplyUpgradesToPlayer(steamId);
+                        __instance.SyncGroupCreditsServerRpc(__instance.groupCredits, __instance.numberOfItemsInDropship);
+
+                        __instance.currentNode = null;
+                        __result = CreateNode($"UPGRADE PURCHASED!\n{upgradeType.Value} upgraded to Lv.{newLevel} for {price}cr.\n\n");
+                    }
+                    else
+                    {
+                        __instance.currentNode = null;
+                        __result = CreateNode("ERROR: Purchase failed.\n\n");
+                    }
+                }
+                else if (Unity.Netcode.NetworkManager.Singleton != null)
+                {
+                    // Client: send request to server
+                    string requestMsg = $"{steamId}:{upgradeType.Value}";
+                    ShipCommanderNetwork.UpgradeRequestMessage.SendServer(requestMsg);
+
+                    __instance.currentNode = null;
+                    __result = CreateNode($"Requesting {upgradeType.Value} Lv.{currentLevel + 1} upgrade...\n\n");
+                }
+                else
+                {
+                    // Offline
+                    if (SuitUpgradeManager.Instance.TryPurchase(steamId, upgradeType.Value, __instance))
+                    {
+                        int newLevel = playerData.GetLevel(upgradeType.Value);
+                        ShipCommanderNetwork.ApplyUpgradesToPlayer(steamId);
+
+                        __instance.currentNode = null;
+                        __result = CreateNode($"UPGRADE PURCHASED!\n{upgradeType.Value} upgraded to Lv.{newLevel} for {price}cr.\n\n");
+                    }
+                }
+
+                return false;
+            }
+
+            // ============================================================
+            //  DEBUG COMMANDS
+            // ============================================================
+
+            if (verb == "debug" && words.Length >= 2)
+            {
+                var localPlayer = StartOfRound.Instance?.localPlayerController;
+                if (localPlayer == null) return true;
+                string steamId = SuitUpgradeManager.GetSteamId(localPlayer);
+                if (steamId == null) return true;
+
+                string debugCmd = words[1].ToLower();
+
+                if (debugCmd == "maxupgrades")
+                {
+                    SuitUpgradeManager.Instance.MaxAllUpgrades(steamId, localPlayer.playerUsername);
+                    ShipCommanderNetwork.ApplyUpgradesToPlayer(steamId);
+                    if (Unity.Netcode.NetworkManager.Singleton != null)
+                    {
+                        ShipCommanderNetwork.SendFullSync();
+                    }
+                    __instance.currentNode = null;
+                    __result = CreateNode("[DEBUG] All upgrades set to MAX.\n\n");
+                    return false;
+                }
+
+                if (debugCmd == "resetupgrades")
+                {
+                    SuitUpgradeManager.Instance.ResetAllUpgrades(steamId);
+                    ShipCommanderNetwork.ApplyUpgradesToPlayer(steamId);
+                    if (Unity.Netcode.NetworkManager.Singleton != null)
+                    {
+                        ShipCommanderNetwork.UpgradeResetMessage.SendClients(steamId);
+                    }
+                    __instance.currentNode = null;
+                    __result = CreateNode("[DEBUG] All upgrades reset to 0.\n\n");
+                    return false;
+                }
+
+                if (debugCmd == "credits" && words.Length >= 3)
+                {
+                    if (int.TryParse(words[2], out int newCredits))
+                    {
+                        __instance.groupCredits = newCredits;
+                        __instance.SyncGroupCreditsServerRpc(newCredits, __instance.numberOfItemsInDropship);
+                        __instance.currentNode = null;
+                        __result = CreateNode($"[DEBUG] Credits set to {newCredits}.\n\n");
+                        return false;
+                    }
+                }
+
+                if (debugCmd == "upgrade" && words.Length >= 4)
+                {
+                    var upgradeType = SuitUpgradeManager.ParseUpgradeType(words[2]);
+                    if (upgradeType.HasValue && int.TryParse(words[3], out int level))
+                    {
+                        SuitUpgradeManager.Instance.SetUpgradeLevel(steamId, upgradeType.Value, level, localPlayer.playerUsername);
+                        SuitUpgradeManager.Instance.SaveData();
+                        ShipCommanderNetwork.ApplyUpgradesToPlayer(steamId);
+                        if (Unity.Netcode.NetworkManager.Singleton != null)
+                        {
+                            ShipCommanderNetwork.SendFullSync();
+                        }
+                        __instance.currentNode = null;
+                        __result = CreateNode($"[DEBUG] {upgradeType.Value} set to Lv.{level}.\n\n");
+                        return false;
+                    }
+                }
             }
 
             if (verb == "shocker" || verb == "defense")
